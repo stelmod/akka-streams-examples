@@ -2,6 +2,8 @@ package com.stelmod.akka.streams
 
 import akka.stream.scaladsl.Flow
 
-object EvenNumberFlow {
+object Flows {
   def even = Flow[Int].filter(_ % 2 == 0)
+
+  def largerThan(limit: Int) = Flow[Int].filter(_ > limit)
 }

@@ -16,12 +16,21 @@ class FlowTest extends WordSpec with Matchers with BeforeAndAfterAll{
 
   "Even number Flow" in {
     val source = NumbersSource.source(1, 4)
-    val flow = EvenNumberFlow.even
+    val flow = Flows.even
 
     source.via(flow)
       .runWith(TestSink.probe[Int])
       .request(2)
       .expectNext(2, 4)
       .expectComplete()
+  }
+
+  "Combined Flow" in {
+    val source = NumbersSource.source(1, 14)
+
+    source.via(Flows.even).via(Flows.largerThan(7))
+      .runWith(TestSink.probe[Int])
+      .request(2)
+      .expectNext(8, 10)
   }
 }
