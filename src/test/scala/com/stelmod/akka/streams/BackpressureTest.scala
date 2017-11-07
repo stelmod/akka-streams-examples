@@ -42,7 +42,8 @@ class BackpressureTest extends WordSpec with Matchers with BeforeAndAfterAll {
     val flow = Flows.even
 
     val delayedSource: Source[Int, NotUsed] = source.via(flow)
-      .delay(1 seconds, DelayOverflowStrategy.backpressure).addAttributes(Attributes.inputBuffer(1, 1))
+      .delay(1 seconds, DelayOverflowStrategy.backpressure)
+      .addAttributes(Attributes.inputBuffer(1, 1))
 
     val future: Future[immutable.Seq[Int]] = delayedSource.take(10).runWith(Sink.seq)
 
