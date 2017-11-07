@@ -10,11 +10,11 @@ import scala.concurrent.duration._
 object Graphs {
   def evenAndGreater(source: Source[Int, NotUsed], lowerLimit: Int) = {
     GraphDSL.create() { implicit builder =>
-      val f2 = builder.add(Flows.largerThan(lowerLimit))
+      val flow = builder.add(Flows.largerThan(lowerLimit))
 
-      source ~> Flows.even ~> f2
+      source ~> Flows.even ~> flow
 
-      SourceShape(f2.out)
+      SourceShape(flow.out)
     }
   }
 
@@ -28,15 +28,15 @@ object Graphs {
 
   def slowSink(source: Source[Int, NotUsed]) = {
     GraphDSL.create() { implicit builder =>
-      val flow = Flows.even.delay(10 seconds, DelayOverflowStrategy.backpressure).addAttributes(Attributes.inputBuffer(1, 1))
-      val f2 = builder.add(flow)
+      val filterWithDelay = Flows.even.delay(10 seconds, DelayOverflowStrategy.backpressure).addAttributes(Attributes.inputBuffer(1, 1))
+      val flow = builder.add(filterWithDelay)
 
       val broadcast = builder.add(Broadcast[Int](2))
       source ~> broadcast.in
       broadcast.out(0) ~> Sink.foreach[Int](println)
-      broadcast.out(1) ~> f2.in
+      broadcast.out(1) ~> flow.in
 
-      SourceShape(f2.out)
+      SourceShape(flow.out)
     }
   }
 }
