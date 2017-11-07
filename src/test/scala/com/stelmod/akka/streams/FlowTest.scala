@@ -26,7 +26,7 @@ class FlowTest extends WordSpec with Matchers with BeforeAndAfterAll {
   }
 
   "Combined Flow" in {
-    val source = NumbersSource.source(1, 14)
+    val source = NumbersSource.source(1, 20)
 
     source.via(Flows.even).via(Flows.largerThan(7))
       .runWith(TestSink.probe[Int])
