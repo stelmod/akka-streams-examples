@@ -37,6 +37,7 @@ class SinkTest extends WordSpec with Matchers with BeforeAndAfterAll with ScalaF
     val source = Source.single(1)
     val sink = Sink.seq[Int]
 
+    // each runWith creates a new materialized graph, so source can be "reused"
     val sinkResult: Future[immutable.Seq[Int]] = source.take(1).runWith(sink)
     sinkResult.futureValue should contain only 1
 

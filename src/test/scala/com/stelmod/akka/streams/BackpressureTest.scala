@@ -32,6 +32,7 @@ class BackpressureTest extends WordSpec with Matchers with BeforeAndAfterAll {
 
     val future: Future[immutable.Seq[Int]] = delayedSource.take(10).runWith(Sink.seq)
 
+    // default buffer is 16, so take 10 gets all numbers without a 10 second delay
     ScalaFutures.whenReady(future, Timeout(2 seconds)) {
       result => result should contain only (2, 4, 6, 8, 10)
     }
@@ -47,6 +48,7 @@ class BackpressureTest extends WordSpec with Matchers with BeforeAndAfterAll {
 
     val future: Future[immutable.Seq[Int]] = delayedSource.take(10).runWith(Sink.seq)
 
+    // with buffer size 1, we only have time to read two numbers before the 2 sec timeout
     an [TimeoutException] should be thrownBy Await.result(future, 2 seconds)
   }
 
