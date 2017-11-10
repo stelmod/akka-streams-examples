@@ -54,9 +54,19 @@ class BackpressureTest extends WordSpec with Matchers with BeforeAndAfterAll {
 
   "Backpressure stops the source from producing" in {
     val source = NumbersSource.source(1, 10)
-    val graph = Graphs.slowSink(source)
+    val graph = Graphs.filterAndDelayGraph(source)
 
     val future = Source.fromGraph(graph).take(10).runWith(Sink.seq)
+    // 6 numbers should be printed, we delay only on even numbers
+    an [TimeoutException] should be thrownBy Await.result(future, 25 seconds)
+  }
+
+  "Backpressure stops the source from producing as early as the first delay" in {
+    val source = NumbersSource.source(1, 10)
+    val graph = Graphs.delayAndFilterGraph(source)
+
+    val future = Source.fromGraph(graph).take(10).runWith(Sink.seq)
+    // 3 numbers should be printed, we delay on all numbers
     an [TimeoutException] should be thrownBy Await.result(future, 25 seconds)
   }
 }
